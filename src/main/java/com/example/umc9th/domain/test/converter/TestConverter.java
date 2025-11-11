@@ -9,7 +9,15 @@ public class TestConverter {
             String testing
     ) {
         return TestResDTO.Testing.builder()
-                .testing(testing)
+                .testString(testing)
+                .build();
+    }
+    // 객체 -> DTO
+    public static TestResDTO.Exception toExceptionDTO(
+            String testing
+    ){
+        return TestResDTO.Exception.builder()
+                .testString(testing)
                 .build();
     }
 }

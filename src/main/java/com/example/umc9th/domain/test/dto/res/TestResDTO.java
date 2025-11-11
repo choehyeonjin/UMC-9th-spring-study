@@ -7,6 +7,12 @@ public class TestResDTO {
     @Builder
     @Getter
     public static class Testing {
-        private String testing;
+        private String testString;
+    }
+
+    @Builder
+    @Getter
+    public static class Exception {
+        private String testString;
     }
 }
