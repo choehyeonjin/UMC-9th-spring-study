@@ -1,7 +1,8 @@
-package com.example.umc9th.domain.review.dto;
+package com.example.umc9th.domain.review.dto.res;
 
 import java.time.LocalDateTime;
-public record ReviewResponse(
+public record ReviewResDTO(
+
         Long reviewId,
         String storeName,
         Float rating,

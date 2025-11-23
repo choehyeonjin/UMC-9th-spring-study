@@ -1,6 +1,6 @@
 package com.example.umc9th.domain.review.repository;
 
-import com.example.umc9th.domain.review.dto.ReviewResponse;
+import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
 import com.example.umc9th.domain.review.entity.QReview;
 import com.example.umc9th.domain.review.entity.QReviewReply;
 import com.example.umc9th.domain.store.entity.QStore;
@@ -19,7 +19,7 @@ public class ReviewQueryDslImpl implements ReviewQueryDsl {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ReviewResponse> findMyReviews(Long memberId, String storeName, Integer ratingBand) {
+    public List<ReviewResDTO> findMyReviews(Long memberId, String storeName, Integer ratingBand) {
 
         // Q클래스 정의
         QReview review = QReview.review;
@@ -47,7 +47,7 @@ public class ReviewQueryDslImpl implements ReviewQueryDsl {
 
         return queryFactory
                 .select(Projections.constructor(
-                        ReviewResponse.class,
+                        ReviewResDTO.class,
                         review.id,
                         store.name,
                         review.rating,
