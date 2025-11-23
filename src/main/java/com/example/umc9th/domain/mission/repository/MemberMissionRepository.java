@@ -12,7 +12,7 @@ import java.util.Collection;
 @Repository
 public interface MemberMissionRepository extends JpaRepository<MemberMission, Long> {
 
-    // 1) 리뷰 작성 쿼리: 리뷰 작성 전에 성공 미션 존재 여부 확인
+    // 1) 리뷰 작성 쿼리: 리뷰 작성 전에 성공 미션 존재 여부 확인 -> 8주차 이후 추가 구현 예정
     @Query("""
         select count(mm) > 0
         from MemberMission mm
@@ -43,5 +43,8 @@ public interface MemberMissionRepository extends JpaRepository<MemberMission, Lo
             and mm.status = com.example.umc9th.domain.mission.enums.MissionStatus.SUCCESS
             and mm.mission.store.region.id = :regionId
     """)
+
     Long countSuccessInRegion(Long memberId, Long regionId);
+
+    boolean existsByMemberIdAndMissionId(Long memberId, Long missionId);
 }
