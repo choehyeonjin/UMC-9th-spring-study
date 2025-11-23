@@ -34,25 +34,16 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         // DB 저장
         memberRepository.save(member);
 
-        // preferFood 있는 경우 MemberFood 생성
-        if(dto.preferFood() != null && !dto.preferFood().isEmpty()) {
+        // 선호 음식 연결
+        List<MemberFood> list = dto.preferFood().stream()
+                .map(id -> MemberFood.builder()
+                        .member(member)
+                        .food(foodRepository.getReferenceById(id))
+                        .build())
+                .toList();
 
-            List<MemberFood> list = dto.preferFood().stream()
-                    .map(foodId -> {
-                        Food food = foodRepository.findById(foodId)
-                                .orElseThrow(() -> new FoodException(FoodErrorCode.NOT_FOUND));
-
-                        // MemberFood 엔티티 생성
-                        return MemberFood.builder()
-                                .member(member)
-                                .food(food)
-                                .build();
-                    })
-                    .toList();
-
-            // DB 저장
-            memberFoodRepository.saveAll(list);
-        }
+        // DB 저장
+        memberFoodRepository.saveAll(list);
 
         // 응답 DTO 생성
         return MemberConverter.toJoinDTO(member);
