@@ -1,7 +1,7 @@
 package com.example.umc9th.domain.review.controller;
 
-import com.example.umc9th.domain.review.dto.ReviewResponse;
-import com.example.umc9th.domain.review.service.ReviewQueryService;
+import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
+import com.example.umc9th.domain.review.service.query.ReviewQueryService;
 import com.example.umc9th.global.apiPayload.ApiResponse;
 import com.example.umc9th.global.apiPayload.code.GeneralSuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class ReviewQueryController {
     private final ReviewQueryService reviewQueryService;
 
     @GetMapping
-    public ApiResponse<List<ReviewResponse>> myReviews(
+    public ApiResponse<List<ReviewResDTO>> myReviews(
             @PathVariable Long memberId,
             @RequestParam(required = false) String storeName,
             @RequestParam(required = false) Integer ratingBand
@@ -26,7 +26,7 @@ public class ReviewQueryController {
         GeneralSuccessCode code = GeneralSuccessCode.OK;
 
         // 응답 데이터 정의
-        List<ReviewResponse> data = reviewQueryService.getMyReviews(memberId, storeName, ratingBand);
+        List<ReviewResDTO> data = reviewQueryService.getMyReviews(memberId, storeName, ratingBand);
 
         // code+message, result 응답
         return ApiResponse.onSuccess(code, data);

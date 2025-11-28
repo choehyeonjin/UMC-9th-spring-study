@@ -30,14 +30,15 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_type", nullable = false)
-    private UserType userType; // ENUM(USER, ADMIN, OWNER)
+    @Column(name = "user_type", nullable = true)
+    @Builder.Default
+    private UserType userType = UserType.USER; // ENUM(USER, ADMIN, OWNER)
 
-    @Column(name = "social_uid", nullable = false)
+    @Column(name = "social_uid", nullable = true)
     private String socialUid;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "social_type", nullable = false)
+    @Column(name = "social_type", nullable = true)
     private SocialType socialType;
 
     @Column(nullable = false)
@@ -53,10 +54,10 @@ public class Member extends BaseEntity {
     @Column(length = 200)
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phone;
 
     @Column(name = "phone_verified", nullable = false)
@@ -64,19 +65,23 @@ public class Member extends BaseEntity {
     private Boolean phoneVerified = false;
 
     @Column(nullable = false)
-    private Integer point;
+    @Builder.Default
+    private Integer point = 0;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     // 관계 매핑
     @OneToMany(mappedBy = "member")
+    @Builder.Default
     private List<MemberFood> memberFoodList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    @Builder.Default
     private List<MemberTerm> memberTermList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    @Builder.Default
     private List<MemberMission> memberMissionList = new ArrayList<>();
 }
 
