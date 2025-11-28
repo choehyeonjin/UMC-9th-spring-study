@@ -42,12 +42,12 @@ public class ReviewConverter {
     }
 
     // result -> DTO
-    public static ReviewResDTO.ReviewPreViewListDTO toReviewPreviewListDTO(
+    public static ReviewResDTO.ReviewListDTO toReviewListDTO(
             Page<Review> result
     ){
-        return ReviewResDTO.ReviewPreViewListDTO.builder()
+        return ReviewResDTO.ReviewListDTO.builder()
                 .reviewList(result.getContent().stream()
-                        .map(ReviewConverter::toReviewPreviewDTO)
+                        .map(ReviewConverter::toReviewItemDTO)
                         .toList()
                 )
                 .listSize(result.getSize())
@@ -58,14 +58,20 @@ public class ReviewConverter {
                 .build();
     }
 
-    public static ReviewResDTO.ReviewPreViewDTO toReviewPreviewDTO(
+    public static ReviewResDTO.ReviewItemDTO toReviewItemDTO(
             Review review
     ){
-        return ReviewResDTO.ReviewPreViewDTO.builder()
-                .ownerNickname(review.getMember().getName())
-                .score(review.getRating())
-                .body(review.getContent())
-                .createdAt(LocalDate.from(review.getCreatedAt()))
+        return ReviewResDTO.ReviewItemDTO.builder()
+                .reviewId(review.getId())
+                .storeName(review.getStore().getName())
+                .rating(review.getRating())
+                .content(review.getContent())
+                .createdAt(review.getCreatedAt())
+                .replyContent(
+                        review.getReviewReply() == null
+                                ? null
+                                : review.getReviewReply().getContent()
+                )
                 .build();
     }
 }

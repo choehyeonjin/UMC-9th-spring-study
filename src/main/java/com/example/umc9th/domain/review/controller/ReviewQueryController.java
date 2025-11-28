@@ -18,25 +18,26 @@ public class ReviewQueryController implements ReviewControllerDocs {
 
     private final ReviewQueryService reviewQueryService;
 
-    // 내가 쓴 리뷰 조회
+    // 내가 작성한 리뷰 목록 API
+    @Override
     @GetMapping("/members/{memberId}/reviews")
-    public ApiResponse<List<ReviewResDTO>> myReviews(
+    public ApiResponse<ReviewResDTO.ReviewListDTO> myReviews(
             @PathVariable Long memberId,
             @RequestParam(required = false) String storeName,
-            @RequestParam(required = false) Integer ratingBand
+            @RequestParam(required = false) Integer ratingBand,
+            @RequestParam(defaultValue = "1") @ValidPage Integer page
     ) {
-        // 응답 코드 정의
-        GeneralSuccessCode code = GeneralSuccessCode.OK;
-        // 응답 데이터 정의
-        List<ReviewResDTO> data = reviewQueryService.getMyReviews(memberId, storeName, ratingBand);
-        // code+message, result 응답
-        return ApiResponse.onSuccess(code, data);
+        int pageIndex = page - 1;
+        return ApiResponse.onSuccess(
+                ReviewSuccessCode.LIST_FOUND,
+                reviewQueryService.getMyReviews(memberId, storeName, ratingBand, pageIndex)
+        );
     }
 
-    // 가게의 리뷰 목록 조회
+    // 가게의 리뷰 목록 API
     @Override
     @GetMapping("/reviews")
-    public ApiResponse<ReviewResDTO.ReviewPreViewListDTO> getReviews(
+    public ApiResponse<ReviewResDTO.ReviewListDTO> getReviews(
             @RequestParam String storeName,
             @RequestParam(defaultValue = "1") @ValidPage Integer page
             ){

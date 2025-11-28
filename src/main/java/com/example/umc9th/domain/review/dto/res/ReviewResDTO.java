@@ -1,7 +1,6 @@
 package com.example.umc9th.domain.review.dto.res;
 
 import lombok.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewResDTO {
 
-    // getMyReviews 용
+    // 단건 조회용
     private Long reviewId;
     private String storeName;
     private Float rating;
@@ -18,9 +17,10 @@ public class ReviewResDTO {
     private LocalDateTime createdAt;
     private String replyContent;
 
+    // 공통 목록 응답 DTO
     @Builder
-    public record ReviewPreViewListDTO(
-            List<ReviewPreViewDTO> reviewList,
+    public record ReviewListDTO(
+            List<ReviewItemDTO> reviewList,
             Integer listSize,
             Integer totalPage,
             Long totalElements,
@@ -29,10 +29,12 @@ public class ReviewResDTO {
     ) {}
 
     @Builder
-    public record ReviewPreViewDTO(
-            String ownerNickname,
-            Float score,
-            String body,
-            LocalDate createdAt
+    public record ReviewItemDTO(
+            Long reviewId,
+            String storeName,
+            Float rating,
+            String content,
+            LocalDateTime createdAt,
+            String replyContent
     ) {}
 }

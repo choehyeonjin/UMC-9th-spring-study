@@ -13,10 +13,9 @@ import com.example.umc9th.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +23,29 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
 
     private final ReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
-    @Override
+
+    // 내가 작성한 리뷰 목록 API
     @Transactional(readOnly = true)
-    public List<ReviewResDTO> getMyReviews(Long memberId, String storeName, Integer ratingBand) {
-        return reviewRepository.findMyReviews(memberId, storeName, ratingBand);
+    @Override
+    public ReviewResDTO.ReviewListDTO getMyReviews(
+            Long memberId,
+            String storeName,
+            Integer ratingBand,
+            Integer page
+    ){
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<Review> result = reviewRepository.findMyReviews(memberId, storeName, ratingBand, pageRequest);
+
+        if (result.isEmpty()) {
+            throw new ReviewException(ReviewErrorCode.NOT_FOUND);
+        }
+
+        return ReviewConverter.toReviewListDTO(result);
     }
 
+    // 가게의 리뷰 목록 API
     @Override
-    public ReviewResDTO.ReviewPreViewListDTO findReview(
+    public ReviewResDTO.ReviewListDTO findReview(
             String storeName,
             Integer page
     ){
@@ -41,7 +55,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
 
         //- 가게에 맞는 리뷰를 가져온다 (Offset 페이징)
-        PageRequest pageRequest = PageRequest.of(page, 5);
+        PageRequest pageRequest = PageRequest.of(page, 10);
         Page<Review> result = reviewRepository.findAllByStore(store, pageRequest);
 
         // 리뷰가 없다면 예외 터뜨린다
@@ -50,6 +64,6 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
         }
 
         //- 결과를 응답 DTO로 변환한다 (컨버터 이용)
-        return ReviewConverter.toReviewPreviewListDTO(result);
+        return ReviewConverter.toReviewListDTO(result);
     }
 }
