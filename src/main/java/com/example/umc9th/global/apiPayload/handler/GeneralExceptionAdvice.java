@@ -46,6 +46,22 @@ public class GeneralExceptionAdvice {
         return ResponseEntity.status(code.getStatus()).body(errorResponse);
     }
 
+    // 메서드 파라미터 검증
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
+            jakarta.validation.ConstraintViolationException ex
+    ) {
+        GeneralErrorCode code = GeneralErrorCode.VALID_FAIL;
+
+        String message = ex.getConstraintViolations()
+                .iterator()
+                .next()
+                .getMessage();
+
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiResponse.onFailure(code, message));
+    }
+
     // 그 외의 정의되지 않은 모든 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(

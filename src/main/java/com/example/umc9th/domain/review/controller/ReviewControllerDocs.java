@@ -1,9 +1,11 @@
 package com.example.umc9th.domain.review.controller;
 
 import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
+import com.example.umc9th.global.annotation.ValidPage;
 import com.example.umc9th.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ReviewControllerDocs {
 
@@ -16,7 +18,7 @@ public interface ReviewControllerDocs {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "실패")
     })
     ApiResponse<ReviewResDTO.ReviewPreViewListDTO> getReviews(
-            String storeName,
-            Integer page
+            @RequestParam String storeName,
+            @RequestParam @ValidPage Integer page
     );
 }

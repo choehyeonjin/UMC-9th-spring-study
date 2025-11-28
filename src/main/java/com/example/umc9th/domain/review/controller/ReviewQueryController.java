@@ -3,6 +3,7 @@ package com.example.umc9th.domain.review.controller;
 import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
 import com.example.umc9th.domain.review.exception.code.ReviewSuccessCode;
 import com.example.umc9th.domain.review.service.query.ReviewQueryService;
+import com.example.umc9th.global.annotation.ValidPage;
 import com.example.umc9th.global.apiPayload.ApiResponse;
 import com.example.umc9th.global.apiPayload.code.GeneralSuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +38,12 @@ public class ReviewQueryController implements ReviewControllerDocs {
     @GetMapping("/reviews")
     public ApiResponse<ReviewResDTO.ReviewPreViewListDTO> getReviews(
             @RequestParam String storeName,
-            @RequestParam Integer page
-    ){
-
+            @RequestParam(defaultValue = "1") @ValidPage Integer page
+            ){
+        int pageIndex = page - 1;
         ReviewSuccessCode code = ReviewSuccessCode.LIST_FOUND;
         return ApiResponse.onSuccess(code, reviewQueryService.findReview(
-                storeName, page
+                storeName, pageIndex
         ));
     }
 }
