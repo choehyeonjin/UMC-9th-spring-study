@@ -51,13 +51,18 @@ public class GeneralExceptionAdvice {
     public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
             jakarta.validation.ConstraintViolationException ex
     ) {
-        GeneralErrorCode code = GeneralErrorCode.VALID_FAIL;
-
         String message = ex.getConstraintViolations()
                 .iterator()
                 .next()
                 .getMessage();
 
+        // 기본: 일반 유효성 검증 실패 (VALID_FAIL)
+        GeneralErrorCode code = GeneralErrorCode.VALID_FAIL;
+
+        // @ValidPage: INVALID_PAGE
+        if (message.equals(GeneralErrorCode.INVALID_PAGE.getMessage())) {
+            code = GeneralErrorCode.INVALID_PAGE;
+        }
         return ResponseEntity.status(code.getStatus())
                 .body(ApiResponse.onFailure(code, message));
     }
