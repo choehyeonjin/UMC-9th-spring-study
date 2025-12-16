@@ -1,5 +1,6 @@
 package com.example.umc9th.global.config;
 
+import com.example.umc9th.global.auth.entrypoint.AuthenticationEntryPointImpl;
 import com.example.umc9th.global.auth.jwt.JwtAuthFilter;
 import com.example.umc9th.global.auth.jwt.JwtUtil;
 import com.example.umc9th.global.auth.service.CustomUserDetailsService;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,6 +26,7 @@ public class SecurityConfig {
 
     private final String[] allowUris = {
             "/login",
+            "/signup",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
@@ -39,14 +42,17 @@ public class SecurityConfig {
                 )
                 // 폼로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
-                // JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+                // JwtAuthFilter를 UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                );
+                )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint()))
+
+        ;
 
         return http.build();
     }
@@ -60,4 +66,10 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new AuthenticationEntryPointImpl();
+    }
+
 }
