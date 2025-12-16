@@ -3,6 +3,7 @@ package com.example.umc9th.domain.mission.repository;
 import com.example.umc9th.domain.mission.entity.mapping.MemberMission;
 import com.example.umc9th.domain.mission.enums.MissionStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,7 @@ public interface MemberMissionRepository extends JpaRepository<MemberMission, Lo
             else 1
             end, mm.updatedAt desc
     """)
-    Page<MemberMission> findMyMissions(Long memberId, Collection<MissionStatus> statuses, Pageable pageable);
+    Page<MemberMission> findMyMissions(Long memberId, Collection<MissionStatus> statuses, PageRequest pageRequest);
 
     // 4) 특정 지역에서 완료한 미션 개수
     @Query("""
@@ -47,4 +48,6 @@ public interface MemberMissionRepository extends JpaRepository<MemberMission, Lo
     Long countSuccessInRegion(Long memberId, Long regionId);
 
     boolean existsByMemberIdAndMissionId(Long memberId, Long missionId);
+
+    Page<MemberMission> findAllByMember_IdAndStatus(Long memberId, MissionStatus status, PageRequest pageRequest);
 }

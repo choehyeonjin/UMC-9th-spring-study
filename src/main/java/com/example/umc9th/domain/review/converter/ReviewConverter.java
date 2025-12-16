@@ -3,9 +3,11 @@ package com.example.umc9th.domain.review.converter;
 import com.example.umc9th.domain.member.entity.Member;
 import com.example.umc9th.domain.review.dto.req.ReviewReqDTO;
 import com.example.umc9th.domain.review.dto.res.ReviewCreateResDTO;
+import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
 import com.example.umc9th.domain.review.entity.Review;
 import com.example.umc9th.domain.review.entity.ReviewPhoto;
 import com.example.umc9th.domain.store.entity.Store;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 
@@ -35,6 +37,40 @@ public class ReviewConverter {
                 .rating(review.getRating())
                 .content(review.getContent())
                 .createdAt(review.getCreatedAt())
+                .build();
+    }
+
+    // result -> DTO
+    public static ReviewResDTO.ReviewListDTO toReviewListDTO(
+            Page<Review> result
+    ){
+        return ReviewResDTO.ReviewListDTO.builder()
+                .reviewList(result.getContent().stream()
+                        .map(ReviewConverter::toReviewItemDTO)
+                        .toList()
+                )
+                .listSize(result.getSize())
+                .totalPage(result.getTotalPages())
+                .totalElements(result.getTotalElements())
+                .isFirst(result.isFirst())
+                .isLast(result.isLast())
+                .build();
+    }
+
+    public static ReviewResDTO.ReviewItemDTO toReviewItemDTO(
+            Review review
+    ){
+        return ReviewResDTO.ReviewItemDTO.builder()
+                .reviewId(review.getId())
+                .storeName(review.getStore().getName())
+                .rating(review.getRating())
+                .content(review.getContent())
+                .createdAt(review.getCreatedAt())
+                .replyContent(
+                        review.getReviewReply() == null
+                                ? null
+                                : review.getReviewReply().getContent()
+                )
                 .build();
     }
 }

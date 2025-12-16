@@ -46,6 +46,27 @@ public class GeneralExceptionAdvice {
         return ResponseEntity.status(code.getStatus()).body(errorResponse);
     }
 
+    // 메서드 파라미터 검증
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
+            jakarta.validation.ConstraintViolationException ex
+    ) {
+        String message = ex.getConstraintViolations()
+                .iterator()
+                .next()
+                .getMessage();
+
+        // 기본: 일반 유효성 검증 실패 (VALID_FAIL)
+        GeneralErrorCode code = GeneralErrorCode.VALID_FAIL;
+
+        // @ValidPage: INVALID_PAGE
+        if (message.equals(GeneralErrorCode.INVALID_PAGE.getMessage())) {
+            code = GeneralErrorCode.INVALID_PAGE;
+        }
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiResponse.onFailure(code, message));
+    }
+
     // 그 외의 정의되지 않은 모든 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(

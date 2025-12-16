@@ -1,13 +1,15 @@
 package com.example.umc9th.domain.review.repository;
 
-import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
 import com.example.umc9th.domain.review.entity.QReview;
 import com.example.umc9th.domain.review.entity.QReviewReply;
+import com.example.umc9th.domain.review.entity.Review;
 import com.example.umc9th.domain.store.entity.QStore;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public class ReviewQueryDslImpl implements ReviewQueryDsl {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ReviewResDTO> findMyReviews(Long memberId, String storeName, Integer ratingBand) {
+    public Page<Review> findMyReviews(Long memberId, String storeName, Integer ratingBand, Pageable pageable) {
 
         // Q클래스 정의
         QReview review = QReview.review;
@@ -45,21 +47,25 @@ public class ReviewQueryDslImpl implements ReviewQueryDsl {
             if (lo < 5) builder.and(review.rating.lt(hi));
         }
 
-        return queryFactory
-                .select(Projections.constructor(
-                        ReviewResDTO.class,
-                        review.id,
-                        store.name,
-                        review.rating,
-                        review.content,
-                        review.createdAt,
-                        reply.content
-                ))
-                .from(review)
-                .join(review.store, store) // 가게는 반드시 존재
-                .leftJoin(review.reviewReply, reply) // 답글은 선택적
+        var query = queryFactory
+                .selectFrom(review)
+                .join(review.store, store).fetchJoin()
+                .leftJoin(review.reviewReply, reply).fetchJoin()
                 .where(builder)
-                .orderBy(review.createdAt.desc())
+                .orderBy(review.createdAt.desc());
+
+        List<Review> content = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        Long total = queryFactory
+                .select(review.count())
+                .from(review)
+                .where(builder)
+                .fetchOne();
+
+        long totalElements = (total == null) ? 0L : total;
+        return new PageImpl<>(content, pageable, totalElements);
     }
 }
