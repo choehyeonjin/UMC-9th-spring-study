@@ -6,9 +6,17 @@ import java.time.LocalDateTime;
 
 public class MemberResDTO {
 
+    // 회원가입
     @Builder
     public record JoinDTO(
             Long memberId,
             LocalDateTime createdAt
+    ){}
+
+    // 로그인
+    @Builder
+    public record LoginDTO(
+            Long memberId,
+            String accessToken
     ){}
 }

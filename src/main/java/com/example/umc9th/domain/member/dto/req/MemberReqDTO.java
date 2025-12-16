@@ -11,6 +11,7 @@ import java.util.List;
 
 public class MemberReqDTO {
 
+    // 회원가입
     public record JoinDTO(
             @NotBlank
             String name,
@@ -28,5 +29,13 @@ public class MemberReqDTO {
             String nickname,
             @ExistFoods
             List<Long> preferFood // 선택한 음식 유형 ID 리스트
+    ){}
+
+    // 로그인
+    public record LoginDTO(
+            @NotBlank
+            String email,
+            @NotBlank
+            String password
     ){}
 }
